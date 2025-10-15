@@ -25,9 +25,9 @@ jobs:
     outputs:
       TAG: ${{ steps.out.outputs.TAG }}
       VERSION: ${{ steps.out.outputs.VERSION }}
-      SKIP: ${{ steps.check.outputs.SKIP }}
+      SKIP: ${{ steps.poolcheck.outputs.SKIP }}
     steps:
-      - name: Pick tag (dispatch/manual/latest)
+      - name: Determine tag (dispatch/manual/latest)
         id: out
         env:
           INPUT_TAG: ${{ github.event.inputs.tag }}
@@ -40,26 +40,24 @@ jobs:
           elif [[ -n "${INPUT_TAG}" ]]; then
             TAG="${INPUT_TAG}"
           else
-            TAG="$(gh release view --repo "${{ env.ETHREX_REPO }}" --json tagName -q .tagName)"
+            TAG="$(gh release view --repo "${ETHREX_REPO}" --json tagName -q .tagName)"
           fi
           VERSION="${TAG#v}"
           echo "TAG=$TAG" >> "$GITHUB_OUTPUT"
           echo "VERSION=$VERSION" >> "$GITHUB_OUTPUT"
 
-
-      - name: Skip if already published
-        id: check
+      - name: Checkout gh-pages (for skip check)
         uses: actions/checkout@v4
         with:
           ref: ${{ env.PAGES_BRANCH }}
           path: ghpages
           token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Check pool for version
+      - name: Check if version already in pool/
         id: poolcheck
         run: |
           set -euo pipefail
-          VER="${{ needs.resolve-tag.outputs.VERSION }}"
+          VER="${{ steps.out.outputs.VERSION }}"
           if ls ghpages/pool/main/e/ethrex/*"${VER}"* >/dev/null 2>&1; then
             echo "SKIP=true" >> "$GITHUB_OUTPUT"
           else
