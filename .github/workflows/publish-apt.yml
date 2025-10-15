@@ -39,6 +39,7 @@ jobs:
           INPUT_TAG: ${{ github.event.inputs.tag }}
           DISPATCH_TAG: ${{ github.event.client_payload.tag }}
           ETHREX_REPO: ${{ env.ETHREX_REPO }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -euo pipefail
           if [[ -n "${DISPATCH_TAG}" ]]; then
@@ -59,8 +60,6 @@ jobs:
           echo "TAG=$TAG" >> "$GITHUB_OUTPUT"
           echo "VERSION=$VERSION" >> "$GITHUB_OUTPUT"
           echo "FETCH_TAG=$FETCH_TAG" >> "$GITHUB_OUTPUT"
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Checkout gh-pages (for skip check)
         uses: actions/checkout@v4
