@@ -6,15 +6,16 @@ on:
   workflow_dispatch:
     inputs:
       tag:
-        description: "Tag to publish (e.g. v3.0.0). Leave empty to use latest."
+        description: "Version to publish (e.g. 3.0.0 or v3.0.0). Leave empty to use latest."
         required: false
         default: ""
 
 permissions:
   contents: write
 
+# Prevent overlapping pushes to gh-pages
 concurrency:
-  group: apt-publish-${{ github.ref }}
+  group: apt-publish-${{ github.repository }}
   cancel-in-progress: false
 
 env:
@@ -28,16 +29,19 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       TAG: ${{ steps.out.outputs.TAG }}
+      FETCH_TAG: ${{ steps.out.outputs.FETCH_TAG }}
       VERSION: ${{ steps.out.outputs.VERSION }}
       SKIP: ${{ steps.poolcheck.outputs.SKIP }}
     steps:
-      - name: Determine tag (dispatch/manual/latest)
+      - name: Determine tag (dispatch/manual/latest) and normalize
         id: out
         env:
           INPUT_TAG: ${{ github.event.inputs.tag }}
           DISPATCH_TAG: ${{ github.event.client_payload.tag }}
+          ETHREX_REPO: ${{ env.ETHREX_REPO }}
         run: |
           set -euo pipefail
+          # 1) choose source
           if [[ -n "${DISPATCH_TAG}" ]]; then
             TAG="${DISPATCH_TAG}"
           elif [[ -n "${INPUT_TAG}" ]]; then
@@ -45,9 +49,17 @@ jobs:
           else
             TAG="$(gh release view --repo "${ETHREX_REPO}" --json tagName -q .tagName)"
           fi
+
           VERSION="${TAG#v}"
+          if [[ "$TAG" =~ ^[0-9] ]]; then
+            FETCH_TAG="v${TAG}"
+          else
+            FETCH_TAG="$TAG"
+          fi
+
           echo "TAG=$TAG" >> "$GITHUB_OUTPUT"
           echo "VERSION=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "FETCH_TAG=$FETCH_TAG" >> "$GITHUB_OUTPUT"
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -100,8 +112,8 @@ jobs:
 
       - name: Download ethrex binary
         run: |
-          TAG="${{ needs.resolve-tag.outputs.TAG }}"
-          BASE="https://github.com/${{ env.ETHREX_REPO }}/releases/download/${TAG}"
+          FETCH_TAG="${{ needs.resolve-tag.outputs.FETCH_TAG }}"
+          BASE="https://github.com/${{ env.ETHREX_REPO }}/releases/download/${FETCH_TAG}"
           mkdir -p work
           curl -fL "$BASE/${{ matrix.asset }}" -o work/ethrex
           chmod +x work/ethrex
@@ -130,8 +142,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: deb-${{ matrix.id }}
-          path: |
-            *.deb
+          path: "*.deb"
           retention-days: 7
 
   publish:
@@ -205,4 +216,3 @@ jobs:
           git commit -m "apt: publish ${{ needs.resolve-tag.outputs.TAG }}" || echo "no changes"
           git pull --rebase origin ${{ env.PAGES_BRANCH }} || true
           git push origin ${{ env.PAGES_BRANCH }}
-
