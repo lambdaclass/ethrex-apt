@@ -1,1 +1,1 @@
-# ethrex-apt
+# ethrex-debian
