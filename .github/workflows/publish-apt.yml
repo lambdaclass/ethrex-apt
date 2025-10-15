@@ -46,11 +46,21 @@ jobs:
           echo "TAG=$TAG" >> "$GITHUB_OUTPUT"
           echo "VERSION=$VERSION" >> "$GITHUB_OUTPUT"
 
+
       - name: Skip if already published
         id: check
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ env.PAGES_BRANCH }}
+          path: ghpages
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Check pool for version
+        id: poolcheck
         run: |
-          git clone --depth 1 --branch ${{ env.PAGES_BRANCH }} "https://github.com/${{ github.repository }}" ghpages
-          if ls ghpages/pool/main/e/ethrex/*${{ steps.out.outputs.VERSION }}* >/dev/null 2>&1; then
+          set -euo pipefail
+          VER="${{ needs.resolve-tag.outputs.VERSION }}"
+          if ls ghpages/pool/main/e/ethrex/*"${VER}"* >/dev/null 2>&1; then
             echo "SKIP=true" >> "$GITHUB_OUTPUT"
           else
             echo "SKIP=false" >> "$GITHUB_OUTPUT"
