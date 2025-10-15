@@ -32,6 +32,7 @@ jobs:
         env:
           INPUT_TAG: ${{ github.event.inputs.tag }}
           DISPATCH_TAG: ${{ github.event.client_payload.tag }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -euo pipefail
           if [[ -n "${DISPATCH_TAG}" ]]; then
@@ -44,8 +45,6 @@ jobs:
           VERSION="${TAG#v}"
           echo "TAG=$TAG" >> "$GITHUB_OUTPUT"
           echo "VERSION=$VERSION" >> "$GITHUB_OUTPUT"
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Skip if already published
         id: check
