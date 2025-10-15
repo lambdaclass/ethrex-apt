@@ -41,7 +41,6 @@ jobs:
           ETHREX_REPO: ${{ env.ETHREX_REPO }}
         run: |
           set -euo pipefail
-          # 1) choose source
           if [[ -n "${DISPATCH_TAG}" ]]; then
             TAG="${DISPATCH_TAG}"
           elif [[ -n "${INPUT_TAG}" ]]; then
