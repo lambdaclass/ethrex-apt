@@ -48,6 +48,16 @@ sudo apt update
 sudo apt install ethrex-gpu
 ```
 
+For installing a specific version
+```bash
+sudo apt update
+sudo apt install ethrex=4.0.0
+
+# Run the command:
+# sudo apt-mark hold ethrex
+# to allow for system upgrades while keeping this version pinned.
+```
+
 ## GPG Info
 | Key Owner                                    | Fingerprint                                |
 |----------------------------------------------|--------------------------------------------|
