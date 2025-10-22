@@ -89,19 +89,19 @@ jobs:
           - id: linux-amd64
             arch: amd64
             pkgname: ethrex
-            asset: ethrex-linux_x86_64
+            asset: ethrex-l2-linux-x86_64
           - id: linux-amd64-gpu
             arch: amd64
             pkgname: ethrex-gpu
-            asset: ethrex-linux_x86_64-gpu
+            asset: ethrex-l2-linux-x86_64-gpu
           - id: linux-arm64
             arch: arm64
             pkgname: ethrex
-            asset: ethrex-linux_aarch64
+            asset: ethrex-l2-linux-aarch64
           - id: linux-arm64-gpu
             arch: arm64
             pkgname: ethrex-gpu
-            asset: ethrex-linux_aarch64-gpu
+            asset: ethrex-l2-linux-aarch64-gpu
     steps:
       - name: Install packaging tools
         run: |
