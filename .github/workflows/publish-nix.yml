@@ -1,4 +1,4 @@
-name: Release Nix binaries on Cachix
+name: Publish Nix binaries on Cachix
 
 on:
   workflow_dispatch:
@@ -54,6 +54,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
+          repository: 'lambdaclass/ethrex'
           ref: ${{ steps.determine_tag.outputs.tag }}
 
       - name: Install Nix
