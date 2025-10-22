@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
     inputs:
       tag:
-        description: "Version to publish (e.g. 3.0.0 or v3.0.0). Leave empty to use latest."
+        description: "Version to publish (e.g. 5.0.0). Leave empty to use latest."
         required: false
         default: ""
 
