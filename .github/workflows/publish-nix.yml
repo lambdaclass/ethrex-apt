@@ -61,18 +61,17 @@ jobs:
           ref: 'feat/nix-support'
 
       - name: Install Nix
-        uses: cachix/install-nix-action@v26
+        uses: cachix/install-nix-action@latest
 
       - name: Configure Cachix
-        uses: cachix/cachix-action@v14
+        uses: cachix/cachix-action@latest
         with:
           name: ethrex
           authToken: ${{ secrets.CACHIX_AUTH_TOKEN }}
 
       - name: Build with Nix
         run: |
-          ls
-           nix build
+          nix build
 
       - name: Push build to Cachix
         run: cachix push ethrex ./result
