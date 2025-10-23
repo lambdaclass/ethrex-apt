@@ -1,8 +1,7 @@
 name: Publish APT repo from Ethrex release
 
 on:
-  repository_dispatch:
-    types: [ethrex-release]
+  workflow_call:
   workflow_dispatch:
     inputs:
       tag:
