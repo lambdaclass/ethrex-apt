@@ -5,7 +5,7 @@ on:
     secrets:
       APT_SIGNING_KEY: { required: true }
       APT_SIGNING_PASSPHRASE: { required: true }
-      SSH_BOT_COMMIT_KEY: { required: true }
+      APT_SSH_COMMIT_KEY: { required: true }
   workflow_dispatch:
     inputs:
       tag:
@@ -214,7 +214,7 @@ jobs:
       - name: Configure SSH commit signing (id_ed25519)
         run: |
           mkdir -p ~/.ssh
-          echo "${{ secrets.SSH_BOT_COMMIT_KEY }}" > ~/.ssh/id_ed25519
+          echo "${{ secrets.APT_SSH_COMMIT_KEY }}" > ~/.ssh/id_ed25519
           chmod 600 ~/.ssh/id_ed25519
 
           ssh-keygen -yf ~/.ssh/id_ed25519 > ~/.ssh/id_ed25519.pub
