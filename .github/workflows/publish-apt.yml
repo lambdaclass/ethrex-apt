@@ -10,7 +10,8 @@ on:
         default: ""
 
 permissions:
-  contents: write
+  contents: read
+  actions: write
 
 # Prevent overlapping pushes to gh-pages
 concurrency:
@@ -152,6 +153,8 @@ jobs:
         with:
           ref: ${{ env.PAGES_BRANCH }}
           path: pages
+          fetch-depth: 0
+          persist-credentials: false
 
       - name: Download all .deb artifacts
         uses: actions/download-artifact@v4
@@ -214,6 +217,7 @@ jobs:
 
           ssh-keygen -yf ~/.ssh/id_ed25519 > ~/.ssh/id_ed25519.pub
           echo "ethrex+infra@lambdaclass.com $(cat ~/.ssh/id_ed25519.pub)" > ~/.ssh/allowed_signers
+          ssh-keyscan -H github.com >> ~/.ssh/known_hosts
 
           git config --global gpg.format ssh
           git config --global user.signingkey ~/.ssh/id_ed25519
@@ -225,6 +229,7 @@ jobs:
       - name: Commit & push
         run: |
           cd pages
+          git remote set-url origin git@github.com:${{ github.repository }}.git
           git add -A
           git commit -S -m "apt: publish ${{ needs.resolve-tag.outputs.TAG }}" || echo "no changes"
           git pull --rebase origin ${{ env.PAGES_BRANCH }} || true
