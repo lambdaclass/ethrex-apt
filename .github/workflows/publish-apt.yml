@@ -2,6 +2,10 @@ name: Publish APT repo from Ethrex release
 
 on:
   workflow_call:
+    secrets:
+      APT_SIGNING_KEY: { required: true }
+      APT_SIGNING_PASSPHRASE: { required: true }
+      SSH_BOT_COMMIT_KEY: { required: true }
   workflow_dispatch:
     inputs:
       tag:
@@ -64,6 +68,7 @@ jobs:
       - name: Checkout gh-pages (for skip check)
         uses: actions/checkout@v4
         with:
+          repository: lambdaclass/ethrex-apt
           ref: ${{ env.PAGES_BRANCH }}
           path: ghpages
 
@@ -152,6 +157,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           ref: ${{ env.PAGES_BRANCH }}
+          repository: lambdaclass/ethrex-apt
           path: pages
           fetch-depth: 0
           persist-credentials: false
@@ -189,10 +195,8 @@ jobs:
           popd
 
       - name: Import signing key
-        env:
-          APT_GPG_PRIVATE_KEY: ${{ secrets.APT_GPG_PRIVATE_KEY }}
         run: |
-          echo "$APT_GPG_PRIVATE_KEY" | gpg --batch --import
+          echo "${{ secrets.APT_GPG_PRIVATE_KEY }}" | gpg --batch --import
           KEYID=$(gpg --list-secret-keys --with-colons | awk -F: '/^sec:/ {print $5; exit}')
           echo "GPG_KEYID=$KEYID" >> $GITHUB_ENV
 
@@ -208,11 +212,9 @@ jobs:
           popd
 
       - name: Configure SSH commit signing (id_ed25519)
-        env:
-          SSH_PRIV: ${{ secrets.SSH_BOT_COMMIT_KEY }}
         run: |
           mkdir -p ~/.ssh
-          echo "$SSH_PRIV" > ~/.ssh/id_ed25519
+          echo "${{ secrets.SSH_BOT_COMMIT_KEY }}" > ~/.ssh/id_ed25519
           chmod 600 ~/.ssh/id_ed25519
 
           ssh-keygen -yf ~/.ssh/id_ed25519 > ~/.ssh/id_ed25519.pub
@@ -229,7 +231,7 @@ jobs:
       - name: Commit & push
         run: |
           cd pages
-          git remote set-url origin git@github.com:${{ github.repository }}.git
+          git remote set-url origin git@github.com:lambdaclass/ethrex-apt.git
           git add -A
           git commit -S -m "apt: publish ${{ needs.resolve-tag.outputs.TAG }}" || echo "no changes"
           git pull --rebase origin ${{ env.PAGES_BRANCH }} || true
