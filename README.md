@@ -17,8 +17,8 @@ All binaries are signed and versioned exactly as on the [Ethrex GitHub Releases]
 
 ## Supported Platforms
 
-- Debian 13 (Trixie) and newer  
-- Ubuntu 24.04 (Noble Numbat) and newer  
+- Debian 12 (Bookworm) and newer  
+- Ubuntu 22.04 (Jammy Jellyfish) and newer  
 
 ---
 
@@ -51,7 +51,7 @@ sudo apt install ethrex-gpu
 For installing a specific version
 ```bash
 sudo apt update
-sudo apt install ethrex=4.0.0
+sudo apt install ethrex=7.0.0
 
 # Run the command:
 # sudo apt-mark hold ethrex
