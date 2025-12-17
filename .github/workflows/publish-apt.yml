@@ -19,7 +19,7 @@ on:
         required: false
         default: ""
       force:
-        description: "Force publish even if version already exists in pool/"
+        description: "Force publish"
         required: false
         default: false
         type: boolean
