@@ -2,6 +2,12 @@ name: Publish APT repo from Ethrex release
 
 on:
   workflow_call:
+    inputs:
+      force:
+        description: "Force publish even if version already exists in pool/"
+        required: false
+        default: false
+        type: boolean
     secrets:
       APT_GPG_PRIVATE_KEY: { required: true }
       APT_GPG_PASSPHRASE: { required: true }
@@ -12,6 +18,11 @@ on:
         description: "Version to publish (e.g. 5.0.0). Leave empty to use latest."
         required: false
         default: ""
+      force:
+        description: "Force publish even if version already exists in pool/"
+        required: false
+        default: false
+        type: boolean
 
 permissions:
   contents: write
@@ -77,7 +88,10 @@ jobs:
         run: |
           set -euo pipefail
           VER="${{ steps.out.outputs.VERSION }}"
-          if ls ghpages/pool/main/e/ethrex/*"${VER}"* >/dev/null 2>&1; then
+          FORCE_INPUT="${{ github.event.inputs.force || inputs.force }}"
+          if [[ "$FORCE_INPUT" == "true" ]]; then
+            echo "SKIP=false" >> "$GITHUB_OUTPUT"
+          elif ls ghpages/pool/main/e/ethrex/*"${VER}"* >/dev/null 2>&1; then
             echo "SKIP=true" >> "$GITHUB_OUTPUT"
           else
             echo "SKIP=false" >> "$GITHUB_OUTPUT"
