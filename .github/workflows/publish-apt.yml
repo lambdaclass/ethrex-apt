@@ -178,9 +178,9 @@ jobs:
           sudo apt-get install -y dpkg-dev apt-utils gnupg xz-utils
           pushd pages
           mkdir -p dists/${SUITE}/main/binary-amd64 dists/${SUITE}/main/binary-arm64
-          dpkg-scanpackages --arch amd64 pool | tee dists/${SUITE}/main/binary-amd64/Packages | gzip -9 > dists/${SUITE}/main/binary-amd64/Packages.gz
+          dpkg-scanpackages --arch amd64 --multiversion pool | tee dists/${SUITE}/main/binary-amd64/Packages | gzip -9 > dists/${SUITE}/main/binary-amd64/Packages.gz
           xz -c9 dists/${SUITE}/main/binary-amd64/Packages > dists/${SUITE}/main/binary-amd64/Packages.xz
-          dpkg-scanpackages --arch arm64 pool | tee dists/${SUITE}/main/binary-arm64/Packages | gzip -9 > dists/${SUITE}/main/binary-arm64/Packages.gz
+          dpkg-scanpackages --arch arm64 --multiversion pool | tee dists/${SUITE}/main/binary-arm64/Packages | gzip -9 > dists/${SUITE}/main/binary-arm64/Packages.gz
           xz -c9 dists/${SUITE}/main/binary-arm64/Packages > dists/${SUITE}/main/binary-arm64/Packages.xz
           cat > release.conf <<EOF
           APT::FTPArchive::Release::Origin "Ethrex";
