@@ -3,6 +3,11 @@ name: Publish APT repo from Ethrex release
 on:
   workflow_call:
     inputs:
+      tag:
+        description: "Version/tag to publish (e.g. 18.0.0 or v18.0.0). Leave empty to use the latest release."
+        required: false
+        default: ""
+        type: string
       force:
         description: "Force publish even if version already exists in pool/"
         required: false
@@ -51,12 +56,20 @@ jobs:
       - name: Determine tag (dispatch/manual/latest) and normalize
         id: out
         env:
-          INPUT_TAG: ${{ github.event.inputs.tag }}
+          # `inputs.tag` covers both the reusable (workflow_call) and manual
+          # (workflow_dispatch) paths; the reusable caller passes the exact
+          # release being promoted.
+          INPUT_TAG: ${{ inputs.tag }}
           DISPATCH_TAG: ${{ github.event.client_payload.tag }}
           ETHREX_REPO: ${{ env.ETHREX_REPO }}
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -euo pipefail
+          # Prefer an explicitly provided tag. The `gh release view` fallback
+          # resolves the *latest* published release, which lags a just-promoted
+          # one — a caller publishing mid-release must pass `tag` so the apt
+          # package tracks the release being promoted, not whatever GitHub still
+          # reports as latest during the propagation window.
           if [[ -n "${DISPATCH_TAG}" ]]; then
             TAG="${DISPATCH_TAG}"
           elif [[ -n "${INPUT_TAG}" ]]; then
