@@ -138,7 +138,9 @@ jobs:
       - name: Install packaging tools
         run: |
           sudo apt-get update
-          sudo apt-get install -y dpkg-dev apt-utils xz-utils curl
+          # llvm provides llvm-strip, which strips both amd64 and arm64 ELF
+          # binaries from an amd64 runner (host `strip` can't touch arm64).
+          sudo apt-get install -y dpkg-dev apt-utils xz-utils curl llvm
 
       - name: Download ethrex binary
         run: |
@@ -156,6 +158,10 @@ jobs:
           ARCH="${{ matrix.arch }}"
           mkdir -p build/${ARCH}/DEBIAN build/${ARCH}/usr/bin
           install -m 0755 work/ethrex build/${ARCH}/usr/bin/ethrex
+          # Strip symbols so the .deb stays under GitHub's 100 MB per-file push
+          # limit (debs are committed to git and served via Pages). llvm-strip is
+          # arch-agnostic, so it handles arm64 binaries on the amd64 runner.
+          llvm-strip --strip-all build/${ARCH}/usr/bin/ethrex
           cat > build/${ARCH}/DEBIAN/control <<EOF
           Package: ${PKG}
           Version: ${VERSION}
@@ -165,7 +171,8 @@ jobs:
           Maintainer: LambdaClass <ethrex+infra@lambdaclass.com>
           Description: Ethrex — Ethereum execution client (${PKG})
           EOF
-          dpkg-deb --build --root-owner-group build/${ARCH}
+          # Max xz compression for extra headroom under the 100 MB limit.
+          dpkg-deb -Zxz -z9 --build --root-owner-group build/${ARCH}
           mv build/${ARCH}.deb "${PKG}_${VERSION}_${ARCH}.deb"
 
       - name: Upload .deb artifact
