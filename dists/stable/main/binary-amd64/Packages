@@ -116,6 +116,19 @@ Priority: optional
 Description: Ethrex — Ethereum execution client (ethrex)
 
 Package: ethrex
+Version: 29.0.1
+Architecture: amd64
+Maintainer: LambdaClass <ethrex+infra@lambdaclass.com>
+Filename: pool/main/e/ethrex/ethrex_29.0.1_amd64.deb
+Size: 30099696
+MD5sum: 116e7a24817b586e9f894f17a5b93d1b
+SHA1: 14e44f961baf0adcc0261bbbe9fa019de3706224
+SHA256: 4e8df170695f111dddf81f34529a4e227edf81d27121a1293a3ea474c2f9d680
+Section: utils
+Priority: optional
+Description: Ethrex — Ethereum execution client (ethrex)
+
+Package: ethrex
 Version: 3.0.0
 Architecture: amd64
 Maintainer: LambdaClass <ethrex+infra@lambdaclass.com>
@@ -306,6 +319,19 @@ Size: 28755748
 MD5sum: dc56e02110ead128ca85eace74d236e6
 SHA1: 2fc9659c4db2aa0f96b26bf5893a667735cc5e73
 SHA256: 3494fdfaad5243a966d73c7416db63cc17eb555e4ab7636c50fdf8c91ad04531
+Section: utils
+Priority: optional
+Description: Ethrex — Ethereum execution client (ethrex-gpu)
+
+Package: ethrex-gpu
+Version: 29.0.1
+Architecture: amd64
+Maintainer: LambdaClass <ethrex+infra@lambdaclass.com>
+Filename: pool/main/e/ethrex/ethrex-gpu_29.0.1_amd64.deb
+Size: 28756592
+MD5sum: 4f0c2b40229c82f096f6131e81dd6fa5
+SHA1: 8981b091d94312a54493c33a35ba2ae654e92992
+SHA256: 0984da76c41b2f55d494c32f6b5a043d64d62857d708a9b800b6d4784bb85699
 Section: utils
 Priority: optional
 Description: Ethrex — Ethereum execution client (ethrex-gpu)
